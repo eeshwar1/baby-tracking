@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript">
+      
+    </script>
+    <title> {{ title }} </title>
+    
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    
+  </head>
+  <body>
+    <header>  
+      
+      <h1 class="display-1">Baby Tracking - Events</h1>
+
+      {%  include "nav.html" %}
+
+    </header>
+    
+    <main>
+      <div class="row justify-content-md-left">
+      <div class="col">
+      <div class="card">
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">What</th>
+              <th scope="col">Duration</th>
+            </tr>
+          </thead>
+          <tbody>  
+          <!--  {{ data | length }}  -->
+             {% for event in events %}
+
+              <tr>
+                <td>
+                  {{ event['id'] }}
+                </td>
+                <td>
+                  {{ event['event_date'] }}
+                </td>
+                <td>
+                  {{ event['event_time'] }}
+                </td>
+                <td>
+                  {{ event['event_type'] }}
+                </td>
+                <td>
+                  {{ event['event_duration'] }}
+                </td>
+              </tr>
+            {% endfor %}
+    
+            <!-- {% for i in range(0, data|length) %}
+            <tr>
+              <td>
+               {{ data[i]['id'] }}
+              </td> 
+              <td>
+                 {{ data[i]['event_date'] }}
+              </td>
+              <td>
+                  {{ data[i]['event_time'] }}
+              </td>
+              <td>
+                {{ data[i]['event_type'] }}
+              </td>
+              <td>
+                {{ data[i]['event_duration'] }}
+              </td>
+            </tr> 
+           {% endfor %} -->
+          </tbody>
+        </table>
+
+      </div>
+      </div>
+      </div>
+      </div>
+    </main>
+      
+    <footer>
+      
+      <form method="POST">
+      
+      
+      </form>
+      
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript">
+
+      function updateDateAndTime() {
+
+        var checkbox = document.getElementById("currentDateTimeCheckBox")
+        
+        if (checkbox.checked == true) {
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+
+        if(dd<10) {
+            dd = '0' + dd
+        } 
+
+        if(mm<10) {
+            mm = '0' + mm
+        } 
+
+        todayStr = yyyy + '-' + mm + '-' + dd;
+
+        document.getElementById("event-date").value = todayStr;
+
+        hh = today.getHours();
+        mi = today.getMinutes();
+        ss = today.getSeconds();
+
+        if(hh<10) {
+            hh = '0' + hh
+        } 
+
+        if(mi<10) {
+            mi = '0' + mi
+        } 
+
+        if(ss<10) {
+            ss = '0' + ss
+        } 
+        
+        var timeNow = hh + ":" + mi + ":" + ss;
+
+        document.getElementById("event-time").value = timeNow;
+
+        }
+
+        setTimeout(updateDateAndTime,1000);
+      }
+
+      setTimeout(updateDateAndTime,1000);
+
+    </script>
+    <title> {{ title }} </title>
+    
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-utilities.min.css') }}">
+  </head>
+  <body>
+    <header>
+      <h1 class="display-1">Baby Tracking</h1>
+
+      {%  include "nav.html" %}
+
+    </header>
+    <main>
+      <div class="row">
+        <h2>Today</h2>
+      </div>
+      <div class="row justify-content-center mb-3">
+        <div class="col">
+          <div class="card">
+            <h5 class="card-header">Feeding</h5>
+            <div class="card-body">
+              {{ day_counts['Feeding'] or "None Yet"}}
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h5 class="card-header">Wet</h5>
+            <div class="card-body">
+              {{ day_counts['Wet Diaper'] or "None Yet" }}
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h5 class="card-header">Dirty</h5>
+            <div class="card-body">
+              {{ day_counts['Dirty Diaper'] or "None Yet" }}
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      <h2>Add data</h2>
+      <div class="row justify-content-md-left">
+      <div class="col">
+      <div class="card">
+      <div class="card-body">
+
+      
+      <form method="POST">
+        <div class="row">
+          <div class="col-md-3 mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="currentDateTimeCheckBox" checked>
+              <label class="form-check-label" for="currentDateTimeCheck">
+                Use Current Date and Time
+              </label>
+            </div>
+            <div>
+            <label for="duration-time" class="form-label mb-4 my-2">Date</label> 
+            <input class="form-control-lg my-2" type="date" name="event-date" id="event-date">
+            </div>
+            <div>
+            <label for="event-date" class="form-label  mb-4 my-2">Time</label> 
+            <input class="form-control-lg my-2" type="time" step="1" name="event-time" id="event-time">
+            </div>
+          </div>
+          <div class="col">
+            <div class="border border-dark rounded py-4 px-2 mb-4 g-col-6 float-start">
+              <label for="duration-time" class="form-label float-start">Duration</label> 
+              <input class="form-control-lg w-50 float-start mx-2" type="number" step="1" name="duration-time" id="duration-time" value="5"> 
+              <input type="submit" name="feeding" value="Feeding" class="btn btn-primary btn-lg mx-4 my-2">   
+            </div>    
+          </div>
+          <div class="col" role="group">       
+            <input type="submit" name="wet" value="Wet" class="btn btn-success btn-lg mx-4 my-2">
+            <input type="submit" name="dirty" value="Dirty" class="btn btn-warning btn-lg mx-4 my-2">
+          </div>
+        </div>
+      </form>  
+    </div>
+    </div>
+    </div>
+    </div>
+   
+
+    <h2>History</h2>
+
+    <div class="row justify-content-md-left">
+      <div class="col">
+      <div class="card">
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Event Type</th>
+              <th scope="col">Count</th>
+            </tr>
+          </thead>
+          <tbody>  
+             {% for day_count in day_wise_counts %}
+              <tr>
+                <td>
+                  {{ day_count['event_date'] }}
+                </td>
+                <td>
+                  {{ day_count['event_type'] }}
+                </td>
+                <td>
+                  {{ day_count['count'] }}
+                </td>
+              </tr>
+            {% endfor %}
+    
+          </tbody>
+        </table>
+
+      </div>
+      </div>
+      </div>
+      </div>
+
+    </main>
+      
+    <footer>   
+      
+    </footer>
+  </body>
+</html>

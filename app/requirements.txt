@@ -1,0 +1,7 @@
+psycopg2-binary
+requests
+Flask
+Flask-SQLAlchemy
+SQLAlchemy
+gunicorn==20.1.0
+babel
