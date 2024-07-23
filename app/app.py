@@ -196,7 +196,7 @@ def get_events():
                    Event.event_time,
                    Event.event_type, 
                    Event.event_duration)
-            .order_by(Event.event_date, Event.event_time)
+            .order_by(Event.event_date.desc(), Event.event_time.desc())
       )
 
     events_data = []
