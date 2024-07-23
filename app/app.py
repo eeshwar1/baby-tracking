@@ -88,12 +88,31 @@ def get_day_wise_counts():
             day_counts_dict['event_type'] = row_dict['event_type']
             day_counts_dict['count'] = row_dict['count']
             day_wise_counts_data.append(day_counts_dict)
-            
-        day_wise_counts_data_json = json.dumps(day_wise_counts_data, indent=4)
-    
-        day_wise_counts_data_string = json.loads(day_wise_counts_data_json)
 
-    return day_wise_counts_data_string
+     #  combine date for the same date
+        day_counts = {}
+        for item in day_wise_counts_data:
+            _date =  item['event_date']
+            _count_item={}
+            for _item in day_wise_counts_data:
+                if _item['event_date'] == _date:
+                    _count_item[_item['event_type']]=_item['count']
+                
+            day_counts[_date]=_count_item  
+
+      # convert to a pivot table layout with date and count values for each event_type
+        day_counts_pivot=[]
+        for key in day_counts.keys():
+            _item = day_counts[key]
+            _item['date']=key
+            day_counts_pivot.append(_item)
+
+        day_wise_counts_pivot_json = json.dumps(day_counts_pivot, indent=4)
+    
+        day_wise_counts_pivot_string = json.loads(day_wise_counts_pivot_json)
+
+
+    return day_wise_counts_pivot_string
 
 @app.context_processor
 def inject_now():
@@ -133,21 +152,21 @@ def index():
 
         event_date = datetime.today().strftime("%Y-%m-%d")
         try:
-           event_date = request.form.get('event-date')
-           print("form date = ", event_date)
+           event_date = request.form.get("event-date")
+          #  print("form date = ", event_date)
         except Exception as e:
            event_date = datetime.today().strftime("%Y-%m-%d")
 
         event_time = datetime.now().strftime("%H:%M:%S.%f%z")
         try:
-           event_time_str = request.form.get('event-time')
-           event_time_obj = datetime.strptime(event_time_str, "%H:%M %p")
-           print(event_time_obj)
+           event_time_str = request.form.get("event-time")
+          #  print("event time str = " + event_time_str)
+           event_time_obj = datetime.strptime(event_time_str, "%H:%M:%S")
            event_time = event_time_obj.strftime("%H:%M:%S.%f%z")
-           print("event time", event_time)
+          #  print("event time", event_time)
         except Exception as e:
            event_time = datetime.now().strftime("%H:%M:%S.%f%z")
-           print("Exception event time", event_time)
+          #  print("Exception event time", event_time)
 
         new_event = Event(event_type=event_type, 
                           event_date=event_date, 
@@ -164,21 +183,6 @@ def index():
                                day_counts=day_counts,
                                day_wise_counts=day_wise_counts)
 
-@app.route('/test', methods=['GET'])
-def test():
-  return make_response(jsonify({'message': 'test route'}), 200)
-
-# create an event
-@app.route('/events', methods=['POST'])
-def create_event():
-  try:
-    data = request.get_json()
-    new_event = Event(event_type=data['event_type'])
-    db.session.add(new_event)
-    db.session.commit()
-    return make_response(jsonify({'message': 'event created'}), 201)
-  except Exception as e:
-    return make_response(jsonify({'message': 'error creating event'}), 500)
 
 # get all events
 @app.route('/events', methods=['GET'])
@@ -207,7 +211,7 @@ def get_events():
        events_data.append(event_dict)
     
     events_json = json.dumps(events_data, indent=4)
-    print(events_json)
+    # print(events_json)
   
     events_json_string = json.loads(events_json)
 

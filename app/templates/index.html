@@ -121,11 +121,11 @@
               </label>
             </div>
             <div>
-            <label for="duration-time" class="form-label mb-4 my-2">Date</label> 
+            <label for="event-date" class="form-label mb-4 my-2">Date</label> 
             <input class="form-control-lg my-2" type="date" name="event-date" id="event-date">
             </div>
             <div>
-            <label for="event-date" class="form-label  mb-4 my-2">Time</label> 
+            <label for="event-time" class="form-label  mb-4 my-2">Time</label> 
             <input class="form-control-lg my-2" type="time" step="1" name="event-time" id="event-time">
             </div>
           </div>
@@ -150,29 +150,33 @@
 
     <h2>History</h2>
 
-    <div class="row justify-content-md-left">
+    <div class="row">
       <div class="col">
       <div class="card">
       <div class="card-body">
-        <table class="table">
+        <table class="table table-hover">
           <thead>
             <tr>
               <th scope="col">Date</th>
-              <th scope="col">Event Type</th>
-              <th scope="col">Count</th>
+              <th scope="col">Feeding</th>
+              <th scope="col">Wet Diaper</th>
+              <th scope="col">Dirty Diaper</th>
             </tr>
           </thead>
-          <tbody>  
+          <tbody class="table-group-divider">  
              {% for day_count in day_wise_counts %}
               <tr>
+                <th scope="row">
+                  {{ day_count['date'] }}
+                </th>
                 <td>
-                  {{ day_count['event_date'] }}
+                  {{ day_count['Feeding'] or " " }}
                 </td>
                 <td>
-                  {{ day_count['event_type'] }}
+                  {{ day_count['Wet Diaper'] or " "}}
                 </td>
                 <td>
-                  {{ day_count['count'] }}
+                  {{ day_count['Dirty Diaper'] or " " }}
                 </td>
               </tr>
             {% endfor %}
