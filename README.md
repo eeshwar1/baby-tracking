@@ -1,6 +1,6 @@
 # Baby Tracking
 
-A small web app to tracking the daily events of a baby such as Wet and Dirty Diapers, and Feeding timings and durations
+A small web app to track the daily events of a baby such as Wet and Dirty Diapers, and Feeding timings and durations
 
 3 Docker containers are used
 
