@@ -224,8 +224,8 @@ def get_events_list():
        event_dict={}
        row_dict = row._asdict()
        event_dict['id'] = row_dict['id']
-       event_dict['event_date'] = row_dict['event_date'].strftime("%Y-%m-%d")
-       event_dict['event_time'] = row_dict['event_time'].strftime("%H:%M:%S")
+       event_dict['event_date'] = row_dict['event_date'].strftime("%m-%d-%Y")
+       event_dict['event_time'] = row_dict['event_time'].strftime("%I:%M:%S %p")
        event_dict['event_type'] = row_dict['event_type']
        event_dict['event_duration'] = row_dict['event_duration']
        events_data.append(event_dict)

@@ -26,48 +26,43 @@
       <div class="col">
       <div class="card">
       <div class="card-body">
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Date</th>
-              <th scope="col">Time</th>
-              <th scope="col">What</th>
-              <th scope="col">Duration</th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>  
-          <!--  {{ data | length }}  -->
-             {% for event in events %}
+        {% for event in events %}
+          <form action="/events/delete/{{ event.id }}" method="POST"
+          onsubmit="return confirm('Would you like to delete the entry');">
+          <div class="card mx-4 my-4 float-start" style="width: 18rem; height: 10rem;"> 
+            {% if event.event_type == 'Feeding' %}
+            <div class= "card-header bg-primary text-white">
+            {% elif event.event_type == 'Wet Diaper' %}
+            <div class= "card-header bg-success text-white">
+            {% elif event.event_type == 'Dirty Diaper' %}
+            <div class= "card-header bg-warning text-black">
+            {% else %}
+            <div class= "card-header bg-primary text-white">
+            {% endif %}
+              <div class="float-start">
+                <h5>{{ event.event_type }}</h5>
+              </div>
+              <div class="float-end">
+                <input type="submit" class="btn btn-danger" value="-">
+              </div>
+            </div>
+          
+            <div class="card-body">
+              
+                 
+                <p class="card-text">
+                  {{ event['event_date'] }} - {{ event['event_time'] }}
+                </p>
+                {% if event.event_duration > 0 %}
+                  <h6>{{ event.event_duration }} minutes</h6>
+                {% endif %}
+                
+             
+         </div>
+        </div>
+        </form>
 
-              <tr>
-                <td>
-                  {{ event['id'] }}
-                </td>
-                <td>
-                  {{ event['event_date'] }}
-                </td>
-                <td>
-                  {{ event['event_time'] }}
-                </td>
-                <td>
-                  {{ event['event_type'] }}
-                </td>
-                <td>
-                  {{ event['event_duration'] }}
-                </td>
-                <td>
-                  <form action="/events/delete/{{ event['id'] }}" method="POST">
-                    <input type="submit" class="btn btn-danger" value="-">
-                  </form>
-                </td>
-              </tr>
-            {% endfor %}
-    
-          </tbody>
-        </table>
-
+        {% endfor %}
       </div>
       </div>
       </div>
@@ -76,11 +71,7 @@
       
     <footer>
       
-      <form method="POST">
-      
-      
-      </form>
-      
+    
     </footer>
   </body>
 </html>
