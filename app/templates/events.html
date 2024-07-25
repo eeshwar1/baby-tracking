@@ -53,7 +53,7 @@
                 <p class="card-text">
                   {{ event['event_date'] }} - {{ event['event_time'] }}
                 </p>
-                {% if event.event_duration > 0 %}
+                {% if event.event_duration %}
                   <h6>{{ event.event_duration }} minutes</h6>
                 {% endif %}
                 
