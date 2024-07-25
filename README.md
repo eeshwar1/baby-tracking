@@ -11,6 +11,6 @@ A small web app to tracking the daily events of a baby such as Wet and Dirty Dia
 ## To run
 
 1. Clone this repo
-2. cd into the source directory
-3. docker compose build && docker compose up
+2. ```cd baby-tracking``` to move into the source directory
+3. ```docker compose build && docker compose up```
 4. the apps runs on localhost:4000
