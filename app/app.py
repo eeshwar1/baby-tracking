@@ -7,9 +7,13 @@ from babel.dates import format_datetime
 from datetime import datetime
 import json
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
+
+logging.basicConfig(filename='baby-tracking.log', level=logging.DEBUG)
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DB_URL')
 
 db = SQLAlchemy()
 
@@ -160,13 +164,17 @@ def index():
         event_time = datetime.now().strftime("%H:%M:%S.%f%z")
         try:
            event_time_str = request.form.get("event-time")
-          #  print("event time str = " + event_time_str)
+           logger.debug("event time str = " + event_time_str)
            event_time_obj = datetime.strptime(event_time_str, "%H:%M:%S")
            event_time = event_time_obj.strftime("%H:%M:%S.%f%z")
-          #  print("event time", event_time)
+           logger.debug("event time = " + event_time)
+        except ValueError as ve: # try with hh:mm format
+           event_time_obj = datetime.strptime(event_time_str, "%H:%M")
+           event_time = event_time_obj.strftime("%H:%M:%S.%f%z")
+           logger.debug("event time hh:mm = " + event_time)
         except Exception as e:
            event_time = datetime.now().strftime("%H:%M:%S.%f%z")
-          #  print("Exception event time", event_time)
+           logger.debug("Exception event time = " + event_time)
 
         new_event = Event(event_type=event_type, 
                           event_date=event_date, 
@@ -187,8 +195,20 @@ def index():
 # get all events
 @app.route('/events', methods=['GET'])
 def get_events():
-  try:
+  
+  response = get_events_list()
+  if response["code"] == 0:
+    events=response["events"]
+    message=""
+  else:
+    events=[]
+    message=response.message
 
+  return render_template("events.html", title="Baby Tracking - Events",events=events, message=message)  
+
+def get_events_list():
+   
+  try:
     with engine.connect() as conn:
       result = conn.execute(
             select(Event.id, 
@@ -215,11 +235,16 @@ def get_events():
   
     events_json_string = json.loads(events_json)
 
-    return render_template("events.html", title="Baby Tracking - Events", events=events_json_string)
-  
+    response={"code": 0,
+               "message": "successfully retrieved events", 
+               "events": events_json_string}
+   
   except Exception as e:
-    print(f"Exception {e} -> {type(e)}")
-    return make_response(jsonify({'message': 'error getting events'}), 500)
+    logger.debug(f"Exception {e} -> {type(e)}")
+    response={"code": 1, "message": "ERROR getting events", "events": ""}
+
+  
+  return response
 
 # get a user by id
 @app.route('/events/<int:id>', methods=['GET'])
@@ -233,7 +258,7 @@ def get_event(id):
     return make_response(jsonify({'message': 'error getting event'}), 500)
 
 # update a user
-@app.route('/events/<int:id>', methods=['PUT'])
+@app.route('/events/update/<int:id>', methods=['POST'])
 def update_event(id):
   try:
     event = Event.query.filter_by(id=id).first()
@@ -247,17 +272,31 @@ def update_event(id):
     return make_response(jsonify({'message': 'error updating event'}), 500)
 
 # delete a event
-@app.route('/events/<int:id>', methods=['DELETE'])
+@app.route('/events/delete/<int:id>', methods=['POST'])
 def delete_event(id):
   try:
     event = Event.query.filter_by(id=id).first()
     if event:
       db.session.delete(event)
       db.session.commit()
-      return make_response(jsonify({'message': 'event deleted'}), 200)
-    return make_response(jsonify({'message': 'event not found'}), 404)
+      message="event deleted"
+    message="event not found"
+    #   return make_response(jsonify({'message': 'event deleted'}), 200)
+    # return make_response(jsonify({'message': 'event not found'}), 404)
   except Exception as e:
-    return make_response(jsonify({'message': 'error deleting event'}), 500)
+    # return make_response(jsonify({'message': 'error deleting event'}), 500)
+    message="error deleting event"
+  
+  response=get_events_list()
+
+  if response["code"] == 0:
+    events=response["events"]
+  else:
+    events=[]
+    message=response.message
+
+  return render_template("events.html", title="Baby Tracking - Events",events=events, message=message)  
+
   
 
   if __name__ == '__main__':
