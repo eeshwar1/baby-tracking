@@ -118,6 +118,30 @@ def get_day_wise_counts():
 
     return day_wise_counts_pivot_string
 
+def get_day_event_details(for_date=None, event_type='Feeding'):
+
+  filter_date = for_date
+  if filter_date == None:
+    filter_date = datetime.today().strftime("%Y-%m-%d")
+
+  with engine.connect() as conn:
+      result = conn.execute(
+              select(Event.event_date, Event.event_time)
+              .filter(Event.event_date == filter_date, Event.event_type == event_type)
+              .order_by(Event.event_date.desc(), Event.event_time.desc())
+      )
+
+  day_event_data = []
+  for row in result.all():
+      day_event_dict={}
+      row_dict = row._asdict()  
+      #  print(row_dict)      
+      day_event_dict['event_date'] = row_dict['event_date'].strftime("%Y-%m-%d")
+      day_event_dict['event_time'] = row_dict['event_time'].strftime("%I:%M:%S %p")
+      day_event_data .append(day_event_dict)
+
+  return day_event_data
+
 @app.context_processor
 def inject_now():
    return { 'now': datetime.now() }
@@ -139,19 +163,30 @@ def index():
     if request.method == 'GET':
         day_counts = get_day_counts()
         day_wise_counts = get_day_wise_counts()
+        day_event_details={}
+        
+
+        day_event_details['Feeding']=get_day_event_details(event_type='Feeding')
+        day_event_details['Wet Diaper']=get_day_event_details(event_type='Wet Diaper')
+        day_event_details['Dirty Diaper']=get_day_event_details(event_type='Dirty Diaper')
+
+        # print("Day Event Details")
+        # print(day_event_details)
+
         return render_template("index.html", 
                                title="Baby Tracking", 
                                day_counts=day_counts,
-                               day_wise_counts=day_wise_counts)
+                               day_wise_counts=day_wise_counts,
+                               day_event_details=day_event_details)
     else:
         event_type = None
         duration = 0
         if request.form.get('feeding') == "Feeding":
            event_type = "Feeding"
            duration = request.form.get('duration-time')
-        elif request.form.get('wet') == "Wet":
+        elif request.form.get('wet-diaper') == "Wet Diaper":
            event_type = "Wet Diaper"
-        elif request.form.get('dirty') == "Dirty":
+        elif request.form.get('dirty-diaper') == "Dirty Diaper":
            event_type = "Dirty Diaper"
 
         event_date = datetime.today().strftime("%Y-%m-%d")
@@ -186,10 +221,18 @@ def index():
         day_counts = get_day_counts()
         day_wise_counts = get_day_wise_counts()
 
+        day_event_details={}
+        
+
+        day_event_details['Feeding']=get_day_event_details(event_type='Feeding')
+        day_event_details['Wet Diaper']=get_day_event_details(event_type='Wet Diaper')
+        day_event_details['Dirty Diaper']=get_day_event_details(event_type='Dirty Diaper')
+
         return render_template("index.html", 
                                title="Baby Tracking", 
                                day_counts=day_counts,
-                               day_wise_counts=day_wise_counts)
+                               day_wise_counts=day_wise_counts,
+                               day_event_details=day_event_details)
 
 
 # get all events

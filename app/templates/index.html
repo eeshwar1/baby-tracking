@@ -53,8 +53,6 @@
         setTimeout(updateDateAndTime,1000);
       }
 
-      
-
     </script>
     <title> {{ title }} </title>
     
@@ -71,81 +69,204 @@
 
     </header>
     <main>
-      <div class="row">
-        <h2>Today</h2>
-      </div>
+      <form method="POST">
+      <h2>Today</h2>
       <div class="row justify-content-center mb-3">
         <div class="col">
-          <div class="card">
-            <h5 class="card-header">Feeding</h5>
-            <div class="card-body">
-              {{ day_counts['Feeding'] or "None Yet"}}
+          <div class="card my-2">
+            <div class="card-header">
+              <input type="submit" name="feeding" value="Feeding" class="btn btn-primary btn-lg mx-2">   
             </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card">
-            <h5 class="card-header">Wet</h5>
             <div class="card-body">
-              {{ day_counts['Wet Diaper'] or "None Yet" }}
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card">
-            <h5 class="card-header">Dirty</h5>
-            <div class="card-body">
-              {{ day_counts['Dirty Diaper'] or "None Yet" }}
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      </div>
-      <h2>Add data</h2>
-      <div class="row justify-content-md-left">
-      <div class="col">
-      <div class="card">
-      <div class="card-body">
+              {% if day_counts.Feeding %}
+                <button id="day-feed-count" type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#day-feed-detail">
+                  {{ day_counts.Feeding }}
+                </button>
+                <div class="modal" tabindex="-1" id="day-feed-detail">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Feeding Events</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
 
-      
-      <form method="POST">
-        <div class="row">
-          <div class="col-md-3 mb-3">
-            <div class="form-check">
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th scope="col">Date</th>
+                              <th scope="col">Time</th>
+                            </tr>
+                          </thead>
+                          <tbody class="table-group-divider">  
+                             {% for day_event in day_event_details['Feeding'] %}
+                              <tr>
+                                <th scope="row">
+                                  {{ day_event['event_date'] }}
+                                </th>
+                                <td>
+                                  {{ day_event['event_time'] or " " }}
+                                </td>
+                              </tr>
+                            {% endfor %}
+                    
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% else %}           
+                  None Yet
+              {% endif %} 
+              </div>
+            </div>
+
+            </div>
+            
+        <div class="col">
+          <div class="card my-2">
+            <div class="card-header"><input type="submit" name="wet-diaper" value="Wet Diaper" class="btn btn-success btn-lg mx-2"></div>
+            <div class="card-body">
+              {% if day_counts['Wet Diaper'] %}
+                <button id="day-wet-diaper-count" type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#day-wet-diaper-detail">
+                  {{ day_counts['Wet Diaper'] }}
+                </button>
+                <div class="modal" tabindex="-1" id="day-wet-diaper-detail">
+                  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Wet Diaper Events</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+
+                        <table class="table table-hover">
+                          <thead>
+                            <tr>
+                              <th scope="col">Date</th>
+                              <th scope="col">Time</th>
+                            </tr>
+                          </thead>
+                          <tbody class="table-group-divider">  
+                             {% for day_event in day_event_details['Wet Diaper'] %}
+                              <tr>
+                                <th scope="row">
+                                  {{ day_event['event_date'] }}
+                                </th>
+                                <td>
+                                  {{ day_event['event_time'] or " " }}
+                                </td>
+                              </tr>
+                            {% endfor %}
+                    
+                          </tbody>
+                        </table>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% else %}           
+                  None Yet
+              {% endif %} 
+
+              
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card my-2">
+            <div class="card-header"><input type="submit" name="dirty-diaper" value="Dirty Diaper" class="btn btn-warning btn-lg mx-2"></div>
+            <div class="card-body">
+              {% if day_counts['Dirty Diaper'] %}
+              <button id="day-dirty-diaper-count" type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#day-dirty-diaper-detail">
+                {{ day_counts['Dirty Diaper'] }}
+              </button>
+              <div class="modal" tabindex="-1" id="day-dirty-diaper-detail">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">Dirty Diaper Events</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Time</th>
+                          </tr>
+                        </thead>
+                        <tbody class="table-group-divider">  
+                           {% for day_event in day_event_details['Dirty Diaper'] %}
+                            <tr>
+                              <th scope="row">
+                                {{ day_event['event_date'] }}
+                              </th>
+                              <td>
+                                {{ day_event['event_time'] or " " }}
+                              </td>
+                            </tr>
+                          {% endfor %}
+                  
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% else %}           
+                None Yet
+            {% endif %} 
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
+      <div class="row mb-3">
+        <div class="col">
+        <div class="card">
+          <div class="card-body">
+          <div>
+            <label for="duration-time" class="form-label">Duration (Feeding only)</label> 
+            <input class="form-control-lg mx-2" style="width: 5rem; height: 2rem;" type="number" step="1" name="duration-time" id="duration-time" value="5"> 
+          </div>
+          <div>
+            <div>
               <input class="form-check-input" type="checkbox" value="" id="currentDateTimeCheckBox" checked>
-              <label class="form-check-label" for="currentDateTimeCheck">
-                Use Current Date and Time
+              <label class="form-check-label" for="currentDateTimeCheckBox">
+                Current Date/Time
               </label>
             </div>
             <div>
-            <label for="event-date" class="form-label mb-4 my-2">Date</label> 
-            <input class="form-control-lg my-2" type="date" name="event-date" id="event-date">
+              <label for="event-date" class="form-label my-2">Date</label> 
+              <input class="form-control-lg my-2" type="date" name="event-date" id="event-date">
             </div>
             <div>
-            <label for="event-time" class="form-label  mb-4 my-2">Time</label> 
-            <input class="form-control-lg my-2" type="time" step="1" name="event-time" id="event-time">
+              <label for="event-time" class="form-label my-2">Time</label> 
+              <input class="form-control-lg my-2" type="time" step="1" name="event-time" id="event-time">
             </div>
           </div>
-          <div class="col">
-            <div class="border border-dark rounded py-4 px-2 mb-4 g-col-6 float-start">
-              <label for="duration-time" class="form-label float-start">Duration</label> 
-              <input class="form-control-lg w-50 float-start mx-2" type="number" step="1" name="duration-time" id="duration-time" value="5"> 
-              <input type="submit" name="feeding" value="Feeding" class="btn btn-primary btn-lg mx-4 my-2">   
-            </div>    
-          </div>
-          <div class="col" role="group">       
-            <input type="submit" name="wet" value="Wet" class="btn btn-success btn-lg mx-4 my-2">
-            <input type="submit" name="dirty" value="Dirty" class="btn btn-warning btn-lg mx-4 my-2">
-          </div>
         </div>
-      </form>  
-    </div>
-    </div>
-    </div>
-    </div>
+        </div>
+      </div>
+      </div>
+    </form>  
+  
    
 
     <h2>History</h2>
