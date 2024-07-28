@@ -136,7 +136,7 @@ def get_day_event_details(for_date=None, event_type='Feeding'):
       day_event_dict={}
       row_dict = row._asdict()  
       #  print(row_dict)      
-      day_event_dict['event_date'] = row_dict['event_date'].strftime("%Y-%m-%d")
+      day_event_dict['event_date'] = row_dict['event_date'].strftime("%m-%d-%Y")
       day_event_dict['event_time'] = row_dict['event_time'].strftime("%I:%M:%S %p")
       day_event_data .append(day_event_dict)
 
