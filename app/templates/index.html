@@ -132,7 +132,7 @@
             <div class="card-header"><input type="submit" name="wet-diaper" value="Wet Diaper" class="btn btn-success btn-lg mx-2"></div>
             <div class="card-body">
               {% if day_counts['Wet Diaper'] %}
-                <button id="day-wet-diaper-count" type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#day-wet-diaper-detail">
+                <button id="day-wet-diaper-count" type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#day-wet-diaper-detail">
                   {{ day_counts['Wet Diaper'] }}
                 </button>
                 <div class="modal" tabindex="-1" id="day-wet-diaper-detail">
@@ -185,7 +185,7 @@
             <div class="card-header"><input type="submit" name="dirty-diaper" value="Dirty Diaper" class="btn btn-warning btn-lg mx-2"></div>
             <div class="card-body">
               {% if day_counts['Dirty Diaper'] %}
-              <button id="day-dirty-diaper-count" type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#day-dirty-diaper-detail">
+              <button id="day-dirty-diaper-count" type="button" class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#day-dirty-diaper-detail">
                 {{ day_counts['Dirty Diaper'] }}
               </button>
               <div class="modal" tabindex="-1" id="day-dirty-diaper-detail">
