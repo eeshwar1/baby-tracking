@@ -53,6 +53,222 @@
         setTimeout(updateDateAndTime,1000);
       }
 
+      function deleteEvent(id, event_type) {
+
+        if (confirm("Do you want to delete the event?")) {
+
+          console.log("Will delete event with id: " + id);
+
+          var my_url = "/v2/events/delete/" + id
+
+          console.log("calling -> " + my_url)
+          $.ajax({
+            url: my_url,
+            type: 'POST',
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+
+              console.log(result);
+
+              refreshPageData(event_type);
+            },
+            error: function(result) {
+              console.log(result);
+            }
+        
+            });
+        }
+      }
+
+      function refreshPageData(event_type) {
+
+        refresh_day_events(event_type);
+        refresh_day_event_counts();
+        refresh_day_wise_counts();
+
+      }
+
+      function refresh_day_events(event_type) {
+
+        var my_url = "/v2/events/day/" + event_type
+
+        console.log("calling -> " + my_url)
+        $.ajax({
+          url: my_url,
+          type: 'GET',
+          contentType: "application/json",
+          dataType: 'json',
+          success: function(result) {
+            console.log(result);
+            render_day_events(result["events"], event_type);
+
+          },
+          error: function(result) {
+            console.log(result);
+          }
+
+        });
+      }
+
+      function render_day_events(events, event_type) {
+
+        elementId = "day-" + event_type + "-tbody"
+        console.log("render_day_events: " + elementId);
+
+          tbody = document.getElementById(elementId);
+
+          var eventHtml = "";
+
+          
+          console.log(events)
+          for (let idx in events) {
+
+            console.log(event);
+            eventHtml += "<tr>";
+            eventHtml += '<td>';
+            eventHtml += events[idx].event_date;
+            eventHtml += '</td>';
+            eventHtml += '<td>';
+            eventHtml += events[idx].event_time;
+            eventHtml += '</td>';
+            eventHtml += '<td>';
+            eventHtml += '<button type="button" class="btn btn-danger fw-bold" onclick="deleteEvent(' +  events[idx].event_id + ',&quot;' + event_type + '&quot;)">X</button>'
+            eventHtml += '</td>';
+            eventHtml += "</tr>";
+
+          }
+
+          tbody.innerHTML = eventHtml;
+        
+
+      }
+
+      function refresh_day_event_counts() {
+
+        var my_url = "/v2/events/daycounts"
+
+        console.log("calling -> " + my_url)
+        $.ajax({
+          url: my_url,
+          type: 'GET',
+          contentType: "application/json",
+          dataType: 'json',
+          success: function(result) {
+            console.log(result);
+
+            event_counts = result["event_counts"];
+
+            var feeding_count = "None Yet";
+
+            if (event_counts["Feeding"]) {
+              feeding_count = event_counts["Feeding"];
+            }
+
+            document.getElementById("day-feed-count").innerHTML = feeding_count;
+
+            var wet_diaper_count = "None Yet";
+
+            if (event_counts["Wet Diaper"]) {
+              wet_diaper_count = event_counts["Wet Diaper"];
+            }
+
+            document.getElementById("day-wet-diaper-count").innerHTML = wet_diaper_count;
+
+            var dirty_diaper_count = "None Yet";
+
+            if (event_counts["Dirty Diaper"]) {
+              dirty_diaper_count = event_counts["Dirty Diaper"];
+            }
+
+            document.getElementById("day-dirty-diaper-count").innerHTML = dirty_diaper_count;
+
+          },
+          error: function(result) {
+            console.log(result);
+          }
+
+        });
+        }
+        
+        function refresh_day_wise_counts() {
+
+          var my_url = "/v2/events/daywisecounts"
+
+          console.log("calling -> " + my_url)
+          $.ajax({
+            url: my_url,
+            type: 'GET',
+            contentType: "application/json",
+            dataType: 'json',
+            success: function(result) {
+              console.log(result);
+
+              day_wise_counts = result["day_wise_counts"];
+
+              render_day_wise_counts(day_wise_counts);
+
+            },
+            error: function(result) {
+              console.log(result);
+            }
+
+          });
+          }
+
+          function render_day_wise_counts(day_wise_counts) {
+
+            tbody = document.getElementById("day-wise-counts-tbody");
+
+            var strHtml = "";
+
+            console.log("render_day_wise_counts");
+            console.log(day_wise_counts);
+
+            for (let idx in day_wise_counts) {
+
+              console.log(event);
+              strHtml += "<tr>";
+              strHtml += '<td>';
+              strHtml += day_wise_counts[idx].date;
+              strHtml += '</td>';
+              strHtml += '<td>';
+              if (day_wise_counts[idx]["Feeding"]) {
+                strHtml += day_wise_counts[idx]["Feeding"];
+              } else {
+                strHtml += "";
+              }
+              
+              strHtml += '</td>';
+              strHtml += '<td>';
+
+              if (day_wise_counts[idx]["Wet Diaper"]) {
+                strHtml += day_wise_counts[idx]["Wet Diaper"];
+              } else {
+
+                strHtml += "";
+              }
+              
+              strHtml += '</td>';
+              strHtml += '<td>';
+              if (day_wise_counts[idx]["Dirty Diaper"]) {
+
+                strHtml += day_wise_counts[idx]["Dirty Diaper"];
+
+              } else {
+
+                strHtml += "";
+              }
+              
+              strHtml += '</td>';
+              strHtml += "</tr>";
+
+            }
+
+            tbody.innerHTML = strHtml;
+
+
+            }
     </script>
     <title> {{ title }} </title>
     
@@ -60,10 +276,13 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-utilities.min.css') }}">
+
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.7.1.min.js') }}"></script>
+
   </head>
   <body onload="setTimeout(updateDateAndTime,1000);">
     <header>
-      <h1 class="display-1">Baby Tracking</h1>
+      <div class="display-3 bg-secondary-subtle">Baby Tracking</div>
 
       {%  include "nav.html" %}
 
@@ -96,9 +315,10 @@
                             <tr>
                               <th scope="col">Date</th>
                               <th scope="col">Time</th>
+                              <th scope="col">Actions</th>
                             </tr>
                           </thead>
-                          <tbody class="table-group-divider">  
+                          <tbody class="table-group-divider" id="day-feeding-tbody">  
                              {% for day_event in day_event_details['Feeding'] %}
                               <tr>
                                 <th scope="row">
@@ -107,8 +327,11 @@
                                 <td>
                                   {{ day_event['event_time'] or " " }}
                                 </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger fw-bold" onclick="deleteEvent({{ day_event['event_id'] }}, 'feeding')">X</button>
+                                </td>
                               </tr>
-                            {% endfor %}
+                              {% endfor %}
                     
                           </tbody>
                         </table>
@@ -149,9 +372,10 @@
                             <tr>
                               <th scope="col">Date</th>
                               <th scope="col">Time</th>
+                              <th scope="col">Actions</th>
                             </tr>
                           </thead>
-                          <tbody class="table-group-divider">  
+                          <tbody class="table-group-divider" id="day-wet-diaper-tbody">  
                              {% for day_event in day_event_details['Wet Diaper'] %}
                               <tr>
                                 <th scope="row">
@@ -159,6 +383,9 @@
                                 </th>
                                 <td>
                                   {{ day_event['event_time'] or " " }}
+                                </td>
+                                <td>
+                                  <button type="button" class="btn btn-danger fw-bold" onclick="deleteEvent({{ day_event['event_id'] }}, 'wet-diaper')">X</button>
                                 </td>
                               </tr>
                             {% endfor %}
@@ -202,9 +429,10 @@
                           <tr>
                             <th scope="col">Date</th>
                             <th scope="col">Time</th>
+                            <th scope="col">Actions</th>
                           </tr>
                         </thead>
-                        <tbody class="table-group-divider">  
+                        <tbody class="table-group-divider" id="day-dirty-diaper-tbody">  
                            {% for day_event in day_event_details['Dirty Diaper'] %}
                             <tr>
                               <th scope="row">
@@ -212,6 +440,9 @@
                               </th>
                               <td>
                                 {{ day_event['event_time'] or " " }}
+                              </td>
+                              <td>
+                                <button type="button" class="btn btn-danger fw-bold" onclick="deleteEvent({{ day_event['event_id'] }}, 'dirty-diaper')">X</button>
                               </td>
                             </tr>
                           {% endfor %}
@@ -243,11 +474,15 @@
           <div class="card-body">
           <div>
             <label for="duration-time" class="form-label">Duration (Feeding only)</label> 
-            <input class="form-control-lg mx-2" style="width: 5rem; height: 2rem;" type="number" step="1" name="duration-time" id="duration-time" value="5"> 
+            <input class="form-control-lg mx-2" style="width: 5rem; height: 2rem;" type="number" step="1" name="duration-time" id="duration-time" value="20"> 
           </div>
           <div>
             <div>
-              <input class="form-check-input" type="checkbox" value="" id="currentDateTimeCheckBox" checked>
+              <input class="form-check-input" type="checkbox" value="1" name="showCurrentDateTime" id="currentDateTimeCheckBox" 
+              {% if page_state['showCurrentDateTime'] == "1" %}
+              checked
+              {% endif %}
+              >
               <label class="form-check-label" for="currentDateTimeCheckBox">
                 Current Date/Time
               </label>
@@ -284,7 +519,7 @@
               <th scope="col">Dirty Diaper</th>
             </tr>
           </thead>
-          <tbody class="table-group-divider">  
+          <tbody class="table-group-divider" id="day-wise-counts-tbody">  
              {% for day_count in day_wise_counts %}
               <tr>
                 <th scope="row">
